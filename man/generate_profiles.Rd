@@ -97,7 +97,7 @@ profs
 ##[1] "seq3"
 }
 \references{
-{\insertRef{abnousi2016fast}{nadda}}
+{\insertRef{abnousi2016fast}{naddaR}}
 }
 \seealso{
 \code{\link{generate_instances}} for generation of 

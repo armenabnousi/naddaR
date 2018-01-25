@@ -7,7 +7,7 @@ January 24, 2018
 # DESCRIPTION
 
 ```
-Package: nadda
+Package: naddaR
 Title: Prediction of Protein Conserved Regions Using NADDA Algorithm
 Version: 0.99.0
 Author: Armen Abnousi <a.abnousi@gmail.com>
@@ -27,7 +27,8 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Imports: Rdpack
-RdMacros: Rdpack```
+RdMacros: Rdpack
+```
 
 
 # `count_kmers`: Counting k-mers in the dataset.
@@ -110,7 +111,7 @@ Argument      |Description
 ## References
 
 
- list("\\insertRef", list("abnousi2016fast"), list("nadda")) 
+ list("\\insertRef", list("abnousi2016fast"), list("naddaR")) 
 
 
 ## Examples
@@ -227,7 +228,7 @@ Argument      |Description
 ## References
 
 
- list("\\insertRef", list("abnousi2016fast"), list("nadda")) 
+ list("\\insertRef", list("abnousi2016fast"), list("naddaR")) 
 
 
 ## Examples
@@ -334,7 +335,7 @@ Argument      |Description
 ## References
 
 
- list("\\insertRef", list("abnousi2016fast"), list("nadda")) 
+ list("\\insertRef", list("abnousi2016fast"), list("naddaR")) 
 
 
 ## Examples

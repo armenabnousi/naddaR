@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 ```
 
 # Overview of NADDA
-NADDA[@abnousi2016fast] uses k-mer frequeuncies of the protein sequences in an input dataset to generate a vectorized representation of each protein. Then it utilizes the generated representative vectors, called k-mer ferquency profiles, as features for prediction of conserved regions, i.e., domains and motifs in the sequences. This package (*nadda*) provides the functions required for generation of instances that can be used to train a new model for conserved index prediction and for generation of test instances that can be used as input to a trained model to predict the conserved indices on them.
+NADDA[@abnousi2016fast] uses k-mer frequeuncies of the protein sequences in an input dataset to generate a vectorized representation of each protein. Then it utilizes the generated representative vectors, called k-mer ferquency profiles, as features for prediction of conserved regions, i.e., domains and motifs in the sequences. This package (*naddaR*) provides the functions required for generation of instances that can be used to train a new model for conserved index prediction and for generation of test instances that can be used as input to a trained model to predict the conserved indices on them.
 
 # Generating Training and Test Instances
 To generate a training or test set, use the function *generate_instances()*. The *labeled* parameter for this function decides is to indicate whether a training set should be generated or a test set. For generation of a training set, the current version of the package uses Pfam or InterPro annotations. These annotations should be provided as a tsv (tabulated) file using the *truth_filename* parameter.
@@ -27,7 +27,7 @@ To generate a training or test set, use the function *generate_instances()*. The
 In the following example we generate a dataset of three protein sequences, calling them "seq1", "seq2", and "seq3". Then we use the *generate_instances* method to create a test set.
 
 ```{r, message=FALSE}
-library(nadda)
+library(naddaR)
 ```
 ```{r}
 ## Generate a set of three example protein sequences

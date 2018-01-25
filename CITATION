@@ -1,4 +1,4 @@
-citHeader("To cite nadda in publications use:")
+citHeader("To cite nadda/naddaR in publications use:")
 
 citEntry(entry = "Article",
   title        = "A Fast Alignment-Free Approach for De Novo Detection of Protein Conserved Regions",

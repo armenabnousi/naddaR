@@ -1,4 +1,4 @@
-Package: nadda
+Package: naddaR
 Title: Prediction of Protein Conserved Regions Using NADDA Algorithm
 Version: 0.99.0
 Author: Armen Abnousi <a.abnousi@gmail.com>
