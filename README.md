@@ -27,8 +27,8 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Imports: Rdpack
-RdMacros: Rdpack```
-
+RdMacros: Rdpack
+```
 
 # `count_kmers`: Counting k-mers in the dataset.
 
