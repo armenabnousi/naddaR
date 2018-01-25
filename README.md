@@ -29,10 +29,6 @@ RoxygenNote: 6.0.1
 Imports: Rdpack
 RdMacros: Rdpack
 ```
-<<<<<<< HEAD
-
-=======
->>>>>>> fba61d2be44f17100372ba4be247240b0b705407
 
 # `count_kmers`: Counting k-mers in the dataset.
 
