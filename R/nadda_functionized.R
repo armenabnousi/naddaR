@@ -124,14 +124,14 @@ gather_kmers <- function(local_names, local_counts) {
                 freqs_df <- data.frame(kmer=gathered_kmers, 
                                        count=gathered_freqs)
                 freqs_df <- data.table(freqs_df)
-                setkey(freqs_df, c("kmer"))
+                setkey(freqs_df, "kmer")
                 freqs <- aggregate(freqs_df$count, 
                                    list(kmers = as.factor(freqs_df$kmer)), 
                                    FUN = sum)
                 rm(freqs_df)
                 colnames(freqs) <- c("kmer", "count")
                 freqs <- data.table(freqs)
-                setkey(freqs, c("kmer"))
+                setkey(freqs, "kmer")
                 freqs
         }
         freqs <- sum_received_freqs(gathered_freqs, gathered_kmers)
@@ -230,7 +230,7 @@ count_kmers.AAStringSet <- function(seqs, klen = 6, parallel = TRUE,
         } else {
                 freqs <- data.table(kmer = local_names, 
                                     count = local_counts)
-                setkey(freqs, c("kmer"))
+                setkey(freqs, "kmer")
         }
         rm(local_names, local_counts, kmers)
         return(freqs)
@@ -446,7 +446,7 @@ extract_seqs_lengths <- function(d) {
         })
         lengths <- data.frame(seqs=names(lengths), lens=lengths)
         lengths <- setorder(as.data.table(lengths))
-        setkey(lengths, c("seqs"))
+        setkey(lengths, "seqs")
         return(lengths)
 }
 generate_instances_internal <- function(profiles, imputed_length, seq_lengths, 
