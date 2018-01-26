@@ -5,6 +5,7 @@
 #' @importFrom pbdMPI comm.size
 #' @importFrom pbdMPI allgather
 #' @importFrom pbdMPI finalize
+#' @import Biostrings
 #' @importFrom Biostrings readAAStringSet
 #' @importFrom data.table data.table
 #' @importFrom data.table setkey
