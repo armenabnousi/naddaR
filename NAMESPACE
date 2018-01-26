@@ -3,6 +3,7 @@
 export(count_kmers)
 export(generate_instances)
 export(generate_profiles)
+import(Biostrings)
 importFrom(Biostrings,readAAStringSet)
 importFrom(Rdpack,reprompt)
 importFrom(data.table,as.data.table)

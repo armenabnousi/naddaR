@@ -71,7 +71,7 @@ head(freqs)
 ##6:  VVR  2
 }
 \references{
-{\insertRef{abnousi2016fast}{naddaR}}
+{\insertRef{abnousi2016fast}{nadda}}
 }
 \seealso{
 \code{\link{generate_instances}} for generation of 

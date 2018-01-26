@@ -103,7 +103,7 @@ head(ins)
 
 }
 \references{
-{\insertRef{abnousi2016fast}{naddaR}}
+{\insertRef{abnousi2016fast}{nadda}}
 }
 \seealso{
 \code{\link{generate_profiles}} for generation of 
