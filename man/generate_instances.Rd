@@ -105,12 +105,6 @@ head(ins)
 \references{
 {\insertRef{abnousi2016fast}{naddaR}}
 }
-\seealso{
-\code{\link{generate_profiles}} for generation of 
-frequency profiles for each sequence\cr
-\code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
-single file
-}
 \author{
 Armen Abnousi
 }

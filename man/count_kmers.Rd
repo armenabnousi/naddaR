@@ -73,15 +73,6 @@ head(freqs)
 \references{
 {\insertRef{abnousi2016fast}{naddaR}}
 }
-\seealso{
-\code{\link{generate_instances}} for generation of 
-training and test instances for each index in each 
-sequence.\cr
-\code{\link{generate_profiles} for generation of sequence k-mer 
-frequency profiles for each sequence}\cr
-\code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
-single file
-}
 \author{
 Armen Abnousi
 }

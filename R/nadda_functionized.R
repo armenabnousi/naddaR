@@ -17,12 +17,12 @@
 #' @importFrom Rdpack reprompt
 
 parallel_read_AA <- function(fasta_filename, 
-                             nproc = ifelse(parallel, comm.size(), 1)) {
+                             nproc = comm.size()) {
         #print("in parallel_read_AA")
         seqs <- readAAStringSet(fasta_filename)
         seqs <- distribute_seqs(seqs, nproc = nproc)
 }
-distribute_seqs <- function(obj, nproc = ifelse(parallel, comm.size(), 1)) {
+distribute_seqs <- function(obj, nproc = comm.size()) {
         if (class(obj) == "character") {
                 distribute_seqs.character(obj, nproc)
         } else if (class(obj) == "AAStringSet") {
@@ -31,8 +31,7 @@ distribute_seqs <- function(obj, nproc = ifelse(parallel, comm.size(), 1)) {
         #UseMethod("distribute_seqs", obj)
 }
 distribute_seqs.character <- function(fasta_filename, 
-                                      nproc = ifelse(parallel, 
-                                                     comm.size(), 1)) {
+                                      nproc = comm.size()) {
 	#print("indistribute_seqs.char")
         seqs <- readAAStringSet(fasta_filename)
         seqs <- distribute_seqs.AAStringSet(seqs, nproc = nproc)
@@ -132,7 +131,7 @@ gather_kmers <- function(local_names, local_counts) {
                 rm(freqs_df)
                 colnames(freqs) <- c("kmer", "count")
                 freqs <- data.table(freqs)
-                setkey(freqs, kmer)
+                setkey(freqs, c("kmer"))
                 freqs
         }
         freqs <- sum_received_freqs(gathered_freqs, gathered_kmers)
@@ -177,13 +176,13 @@ gather_kmers <- function(local_names, local_counts) {
 #' each sequence is counted
 #' at most once, i.e., if there are multiple occureneces of a 
 #' k-mer in one sequence, only one of them is counted.
-#' @seealso \code{\link{generate_instances}} for generation of 
-#' training and test instances for each index in each 
-#' sequence.\cr
-#' \code{\link{generate_profiles} for generation of sequence k-mer 
-#' frequency profiles for each sequence}\cr
-#' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
-#' single file
+#!' @seealso \code{\link{generate_instances}} for generation of 
+#!' training and test instances for each index in each 
+#!' sequence.\cr
+#!' \code{\link{generate_profiles} for generation of sequence k-mer 
+#!' frequency profiles for each sequence}\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
 #' @author Armen Abnousi
 #' @example sandbox/count_kmers_ex.R
 #' @references{\insertRef{abnousi2016fast}{naddaR}}
@@ -203,15 +202,15 @@ count_kmers.character <- function(obj, klen = 6, parallel = TRUE,
                                   distributed = FALSE) {
         #print("incount_kmers.char")
         if (parallel) {
-                seqs <- parallel_read_AA(fasta_filename, nproc)
+                seqs <- parallel_read_AA(obj, nproc)
                 distributed <- TRUE
         } else {
-                seqs <- AAStringSet(readAAStringSet(fasta_filename))
+                seqs <- AAStringSet(readAAStringSet(obj))
         }
         freqs <- count_kmers.AAStringSet(seqs, klen = klen, parallel = parallel, 
                              nproc = nproc, distributed = distributed)
 }
-count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
+count_kmers.AAStringSet <- function(seqs, klen = 6, parallel = TRUE, 
                                     nproc = ifelse(parallel, comm.size(), 1), 
                                     distributed = FALSE) {
         #print("incount_kmers.AA")
@@ -229,8 +228,9 @@ count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE,
                 freqs <- gather_kmers(local_names, local_counts)
                 colnames(freqs) <- c("kmer", "count")
         } else {
-                freqs <- data.table(kmer = local_names, count = local_counts)
-                setkey(freqs, kmer)
+                freqs <- data.table("kmer" = local_names, 
+                                    "count" = local_counts)
+                setkey(freqs, c("kmer"))
         }
         rm(local_names, local_counts, kmers)
         return(freqs)
@@ -316,10 +316,10 @@ generate_seqs_freq_profiles <- function(d, klen, freqs, normalize, impute,
 #' include one index for each position in the sequence but also 
 #' \emph{winlen \%\\\% 2} indices at 
 #' the beginning and end of each sequence.
-#' @seealso \code{\link{generate_instances}} for generation of 
-#' training and test instances for each index in each sequence\cr
-#' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
-#' single file
+#!' @seealso \code{\link{generate_instances}} for generation of 
+#!' training and test instances for each index in each sequence\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_profiles_ex.R
 #' @references{\insertRef{abnousi2016fast}{naddaR}}
@@ -384,13 +384,15 @@ generate_profiles.AAStringSet <- function(seqs, klen = 6,
         freqs <- count_kmers(seqs, klen, parallel, nproc, distributed)
         profiles <- generate_seqs_freq_profiles(seqs, klen, freqs, 
                                                 normalize, impute, 
-                                                imputed_length, imputing_length)
+                                                imputed_length, 
+                                                imputing_length)
         profiles
 }
 
 generate_empty_vectors_for_domains <- function(seq_lengths) {
         #print("ingenerate_empty_vectors_for_domains")
-        doms <- lapply(as.character(seq_lengths$seqs), function(name, lengths) {
+        doms <- lapply(as.character(seq_lengths$seqs), 
+                       function(name, lengths) {
                 len <- lengths[name]$lens
                 ret <- rep(0, len)
                 rm(len)
@@ -398,7 +400,8 @@ generate_empty_vectors_for_domains <- function(seq_lengths) {
         }, seq_lengths)
         return(doms)
 }
-generate_domain_vectors <- function(seq_lengths, groundtruth, truth_filename) {
+generate_domain_vectors <- 
+        function(seq_lengths, groundtruth, truth_filename) {
         #print("ingenerate_domain_vectors")
         seq_dom_vectors <- generate_empty_vectors_for_domains(seq_lengths)
         if (groundtruth == "Pfam") {
@@ -408,8 +411,8 @@ generate_domain_vectors <- function(seq_lengths, groundtruth, truth_filename) {
                 labels <- read.csv(truth_filename, header = FALSE, sep = "\t")
                 dom_count <- table(labels$V5)
         }
-        seq_domains <- lapply(seq_dom_vectors, function(dom, labels, 
-                                                        groundtruth, dom_count){
+        seq_domains <- lapply(seq_dom_vectors, 
+                              function(dom, labels, groundtruth, dom_count){
                 labels <- labels[labels$V1 == dom$name,]
                 if (dim(labels)[1] > 0) {
                         if (groundtruth == "Pfam") {
@@ -441,9 +444,9 @@ extract_seqs_lengths <- function(d) {
                 len <- nchar(seq)
                 len
         })
-        lengths <- data.frame(seqs = names(lengths), lens=lengths)
+        lengths <- data.frame("seqs" = names(lengths), "lens"=lengths)
         lengths <- setorder(as.data.table(lengths))
-        setkey(lengths, seqs)
+        setkey(lengths, c("seqs"))
         return(lengths)
 }
 generate_instances_internal <- function(profiles, imputed_length, seq_lengths, 
@@ -569,10 +572,10 @@ generate_instances_internal <- function(profiles, imputed_length, seq_lengths,
 #' indicating the number of proteins in the dataset that have a similar 
 #' conserved region are added to the returned 
 #' dataframe.
-#' @seealso \code{\link{generate_profiles}} for generation of 
-#' frequency profiles for each sequence\cr
-#' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
-#' single file
+#!' @seealso \code{\link{generate_profiles}} for generation of 
+#!' frequency profiles for each sequence\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_instances_ex.R
 #' @references{\insertRef{abnousi2016fast}{naddaR}}
