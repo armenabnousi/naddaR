@@ -7,7 +7,7 @@ Description: Generates protein sequence profiles using frequency of the k-mers p
 biocViews: Clustering,
 	   MultipleSequenceAlignment
 Depends:
-    R (>= 3.4.1),
+    R (>= 3.5),
     pbdMPI,
     data.table,
     Biostrings,
