@@ -121,10 +121,10 @@ gather_kmers <- function(local_names, local_counts) {
         gathered_freqs <- unlist(gathered_freqs)
         gathered_kmers <- unlist(gathered_kmers)
         sum_received_freqs <- function(gathered_freqs, gathered_kmers) {
-                freqs_df <- data.frame("kmer"=gathered_kmers, 
-                                       "count"=gathered_freqs)
+                freqs_df <- data.frame(kmer=gathered_kmers, 
+                                       count=gathered_freqs)
                 freqs_df <- data.table(freqs_df)
-                setkey(freqs_df, kmer)
+                setkey(freqs_df, c("kmer"))
                 freqs <- aggregate(freqs_df$count, 
                                    list(kmers = as.factor(freqs_df$kmer)), 
                                    FUN = sum)
@@ -228,8 +228,8 @@ count_kmers.AAStringSet <- function(seqs, klen = 6, parallel = TRUE,
                 freqs <- gather_kmers(local_names, local_counts)
                 colnames(freqs) <- c("kmer", "count")
         } else {
-                freqs <- data.table("kmer" = local_names, 
-                                    "count" = local_counts)
+                freqs <- data.table(kmer = local_names, 
+                                    count = local_counts)
                 setkey(freqs, c("kmer"))
         }
         rm(local_names, local_counts, kmers)
@@ -444,7 +444,7 @@ extract_seqs_lengths <- function(d) {
                 len <- nchar(seq)
                 len
         })
-        lengths <- data.frame("seqs" = names(lengths), "lens"=lengths)
+        lengths <- data.frame(seqs=names(lengths), lens=lengths)
         lengths <- setorder(as.data.table(lengths))
         setkey(lengths, c("seqs"))
         return(lengths)
