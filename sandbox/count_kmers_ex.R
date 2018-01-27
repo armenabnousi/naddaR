@@ -1,4 +1,4 @@
-library(pbdMPI)
+library(Biostrings)
 ## Generate a set of three example protein sequences
 seqs <- AAStringSet(c("seq1"="MLVVD",
                       "seq2"="PVVRA",
