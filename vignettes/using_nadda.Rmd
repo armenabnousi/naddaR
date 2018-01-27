@@ -28,6 +28,7 @@ In the following example we generate a dataset of three protein sequences, calli
 
 ```{r, message=FALSE}
 library(naddaR)
+library(Biostrings)
 ```
 ```{r}
 ## Generate a set of three example protein sequences
