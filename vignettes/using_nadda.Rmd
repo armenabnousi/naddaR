@@ -2,7 +2,7 @@
 #title: "Protein Conserved Region Prediction Using NADDA in R"
 author: "Armen Abnousi"
 date: "`r Sys.Date()`"
-output: rmarkdown::pdf_document
+output: html_document
 bibliography: ../inst/REFERENCES.bib
 vignette: >
   %\VignetteEngine{knitr::knitr}
