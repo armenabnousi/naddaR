@@ -102,9 +102,6 @@ head(ins)
 ##    seq2      1               1.5     1.5     1.0             2.0     1.0
 
 }
-\references{
-{\insertRef{abnousi2016fast}{naddaR}}
-}
 \author{
 Armen Abnousi
 }

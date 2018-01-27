@@ -96,9 +96,6 @@ profs
 ##[[3]]$seq
 ##[1] "seq3"
 }
-\references{
-{\insertRef{abnousi2016fast}{naddaR}}
-}
 \author{
 Armen Abnousi
 }

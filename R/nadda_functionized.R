@@ -185,7 +185,7 @@ gather_kmers <- function(local_names, local_counts) {
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/count_kmers_ex.R
-#' @references{\insertRef{abnousi2016fast}{naddaR}}
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 count_kmers <- function(obj, klen = 6, parallel = TRUE, 
                         nproc = ifelse(parallel, comm.size(), 1), 
@@ -322,7 +322,7 @@ generate_seqs_freq_profiles <- function(d, klen, freqs, normalize, impute,
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_profiles_ex.R
-#' @references{\insertRef{abnousi2016fast}{naddaR}}
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 generate_profiles <- function(obj, klen = 6, parallel = TRUE, 
                               nproc = ifelse(parallel, comm.size(), 1), 
@@ -578,7 +578,7 @@ generate_instances_internal <- function(profiles, imputed_length, seq_lengths,
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_instances_ex.R
-#' @references{\insertRef{abnousi2016fast}{naddaR}}
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 generate_instances <- function(obj, labeled = TRUE, parallel = TRUE, 
                                nproc = ifelse(parallel, comm.size(), 1), 

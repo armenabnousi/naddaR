@@ -70,9 +70,6 @@ head(freqs)
 ##5:  VVD  1
 ##6:  VVR  2
 }
-\references{
-{\insertRef{abnousi2016fast}{naddaR}}
-}
 \author{
 Armen Abnousi
 }
