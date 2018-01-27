@@ -1,6 +1,6 @@
 Package: naddaR
 Title: Prediction of Protein Conserved Regions Using NADDA Algorithm
-Version: 0.99.929
+Version: 0.99.93
 Author: Armen Abnousi <a.abnousi@gmail.com>
 Maintainer: Armen Abnousi <a.abnousi@gmail.com>
 Description: Generates protein sequence profiles using frequency of the k-mers present in the sequences and predicts conserved regions using those profiles. Can operate in parallel or on single processor.
