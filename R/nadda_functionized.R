@@ -26,7 +26,7 @@ distribute_seqs <- function(obj, nproc = comm.size()) {
         if (class(obj) == "character") {
                 distribute_seqs.character(obj, nproc)
         } else if (class(obj) == "AAStringSet") {
-                distribute_seqs.AAStringSet(obj, nproc)
+                distribute_seqs.AAStringSet(obj, nproc = nproc)
         }
         #UseMethod("distribute_seqs", obj)
 }
@@ -37,8 +37,7 @@ distribute_seqs.character <- function(obj,
         seqs <- distribute_seqs.AAStringSet(seqs, nproc = nproc)
 }
 distribute_seqs.AAStringSet <- function(obj, 
-                                        nproc = ifelse(parallel, 
-                                                       comm.size(), 1)) {
+                                        nproc = comm.size()) {
 	print("indistribute_seq.AA")
         rank <- as.integer(comm.rank())
         l <- length(obj)
