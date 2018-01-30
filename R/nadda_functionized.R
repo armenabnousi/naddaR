@@ -84,13 +84,14 @@ kmerize <- function(obj, klen = 6, parallel = TRUE,
                     nproc = ifelse(parallel, comm.size(), 1), 
                     distributed = FALSE) {
         if (class(obj) == "character") {
-                kmerize.character(obj = obj, klen = klen, parallel = parallel, 
+                kmers <- kmerize.character(obj = obj, klen = klen, parallel = parallel, 
                                   nproc = nproc, distributed = distributed)
         } else if (class(obj) == "AAStringSet") {
-                kmerize.AAStringSet(obj = obj, klen = klen, parallel = parallel, 
+                kmers <- kmerize.AAStringSet(obj = obj, klen = klen, parallel = parallel, 
                                     nproc = nproc, distributed = distributed)
         }
         #UseMethod("kmerize", obj)        
+        return(kmers)
 }
 kmerize.character <- function(obj, klen = 6, parallel = TRUE, 
                               nproc = ifelse(parallel, comm.size(), 1), 
@@ -206,7 +207,7 @@ count_kmers <- function(obj, klen = 6, parallel = TRUE,
                                         nproc = nproc, 
                                         distributed = distributed)
         }
-        kmers
+        return(kmers)
 }
 count_kmers.character <- function(obj, klen = 6, parallel = TRUE, 
                                   nproc = ifelse(parallel, comm.size(), 1), 
@@ -347,7 +348,7 @@ generate_profiles <- function(obj, klen = 6, parallel = TRUE,
                               distributed = FALSE) {
         #print("ingenerate_profiles")
 	if (class(obj) == "character") {
-	        generate_profiles.character(obj = obj, klen = klen, 
+	        profiles <- generate_profiles.character(obj = obj, klen = klen, 
 	                                    parallel = parallel, 
 	                                    nproc = nproc, 
 	                                    normalize = normalize, 
@@ -356,7 +357,7 @@ generate_profiles <- function(obj, klen = 6, parallel = TRUE,
 	                                    imputing_length = imputing_length, 
 	                                    distributed = distributed)
 	} else if (class(obj) == "AAStringSet") {
-	        generate_profiles.AAStringSet(obj = obj, klen = klen, 
+	        profiles <- generate_profiles.AAStringSet(obj = obj, klen = klen, 
 	                                      parallel = parallel, 
 	                                      nproc = nproc, 
 	                                      normalize = normalize, 
@@ -366,6 +367,7 @@ generate_profiles <- function(obj, klen = 6, parallel = TRUE,
 	                                      distributed = distributed)
 	}
         #UseMethod("generate_profiles", obj)
+        return(profiles)
 }
 generate_profiles.character <- function(obj, klen = 6, parallel = TRUE, 
                                         nproc = ifelse(parallel, comm.size(), 1), 
@@ -614,7 +616,8 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
                                distributed = FALSE) {
         #print("ingenerate_instances")
         if (class(obj) == "character") {
-                generate_instances.character(obj = obj, labeled = labeled, 
+                instances <- generate_instances.character(obj = obj, 
+                                                          labeled = labeled, 
                                              parallel = parallel, 
                                              nproc = nproc, 
                                              groundtruth = groundtruth, 
@@ -624,7 +627,8 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
                                              imputing_length = imputing_length, 
                                              distributed = distributed)
         } else if (class(obj) == "AAStringSet") {
-                generate_instances.AAStringSet(obj = obj, labeled = labeled, 
+                instances <- generate_instances.AAStringSet(obj = obj, 
+                                               labeled = labeled, 
                                                parallel = parallel, 
                                                nproc = nproc, 
                                                groundtruth = groundtruth, 
@@ -636,6 +640,7 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
                                                distributed = distributed)
         }
         #UseMethod("generate_instances", obj)
+        return(instances)
 }
 generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE, 
                                          nproc = ifelse(parallel, 
