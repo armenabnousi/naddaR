@@ -20,13 +20,13 @@ parallel_read_AA <- function(fasta_filename,
                              nproc = comm.size()) {
         #print("in parallel_read_AA")
         seqs <- readAAStringSet(fasta_filename)
-        seqs <- distribute_seqs(seqs, nproc = nproc)
+        seqs <- distribute_seqs(obj = seqs, nproc = nproc)
 }
 distribute_seqs <- function(obj, nproc = comm.size()) {
         if (class(obj) == "character") {
-                distribute_seqs.character(obj, nproc)
+                distribute_seqs.character(obj = obj, nproc = nproc)
         } else if (class(obj) == "AAStringSet") {
-                distribute_seqs.AAStringSet(obj, nproc = nproc)
+                distribute_seqs.AAStringSet(obj = obj, nproc = nproc)
         }
         #UseMethod("distribute_seqs", obj)
 }
@@ -34,7 +34,7 @@ distribute_seqs.character <- function(obj,
                                       nproc = comm.size()) {
 	#print("indistribute_seqs.char")
         seqs <- readAAStringSet(obj)
-        seqs <- distribute_seqs.AAStringSet(seqs, nproc = nproc)
+        seqs <- distribute_seqs.AAStringSet(obj = seqs, nproc = nproc)
 }
 distribute_seqs.AAStringSet <- function(obj, 
                                         nproc = comm.size()) {
@@ -109,7 +109,7 @@ kmerize.AAStringSet <- function(obj, klen = 6, parallel = TRUE,
                                 distributed = FALSE) {
         #print("inkmerize.AA")
         if (parallel & !distributed) {
-                obj <- distribute_seqs(obj, nproc)
+                obj <- distribute_seqs(obj = obj, nproc = nproc)
         }
         kmers <- generate_seqs_kmers(obj, klen)
 }
@@ -194,15 +194,17 @@ count_kmers <- function(obj, klen = 6, parallel = TRUE,
                         distributed = FALSE) {
         #print("incount_kmers")
         if(class(obj) == "character") {
-                count_kmers.character(obj = obj, klen = klen, 
+                kmers <- count_kmers.character(obj = obj, klen = klen, 
                                       parallel = parallel, 
-                                      nproc = nproc, distributed = distributed)
+                                      nproc = nproc, 
+                                      distributed = distributed)
         } else if(class(obj) == "AAStringSet") {
-                count_kmers.AAStringSet(obj = obj, klen = klen, 
+                kmers <- count_kmers.AAStringSet(obj = obj, klen = klen, 
                                         parallel = parallel, 
                                         nproc = nproc, 
                                         distributed = distributed)
         }
+        kmers
 }
 count_kmers.character <- function(obj, klen = 6, parallel = TRUE, 
                                   nproc = ifelse(parallel, comm.size(), 1), 
@@ -216,7 +218,8 @@ count_kmers.character <- function(obj, klen = 6, parallel = TRUE,
         }
         freqs <- count_kmers.AAStringSet(obj = seqs, klen = klen, 
                                          parallel = parallel, 
-                             nproc = nproc, distributed = distributed)
+                                        nproc = nproc, 
+                                        distributed = distributed)
 }
 count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
                                     nproc = ifelse(parallel, comm.size(), 1), 
@@ -225,7 +228,7 @@ count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE,
         warning(paste("number of processors,", nproc, ", is not supported in 
                       count_kmers function. Using all available processors."))
         if (parallel & !distributed) {
-                obj <- distribute_seqs(obj)
+                obj <- distribute_seqs(obj = obj, nproc = nproc)
                 distributed <- TRUE
         }
         kmers <- kmerize(obj = obj, klen = klen, 
@@ -395,7 +398,7 @@ generate_profiles.AAStringSet <- function(obj, klen = 6,
         #print("ingenerate_profiles.AA")
         imputed_length <- winlen %/% 2
         if (parallel & !distributed) {
-                obj <- distribute_seqs(obj, nproc)
+                obj <- distribute_seqs(obj = obj, nproc = nproc)
                 distributed <- TRUE
         }
         freqs <- count_kmers(obj = obj, klen = klen, parallel = parallel, 
@@ -614,7 +617,7 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
                                              truth_filename = truth_filename,
                                              klen = klen, 
                                              normalize = normalize, 
-                                             impute = impute, winlen = winlen, 
+                                             impute = impute, winlen = winlen,
                                              imputing_length = imputing_length,
                                              distributed = distributed)
         } else if (class(obj) == "AAStringSet") {
@@ -648,7 +651,7 @@ generate_instances.character <- function(obj, labeled = TRUE,
         } else {
                 seqs <- readAAStringSet(obj)
         }
-        generate_instances.AAStringSet(seqs, labeled = labeled, 
+        generate_instances.AAStringSet(obj = seqs, labeled = labeled, 
                            parallel = parallel, 
                            nproc = nproc, 
                            groundtruth = groundtruth, 
@@ -673,7 +676,7 @@ generate_instances.AAStringSet <- function(obj, labeled = TRUE,
         if (parallel & !distributed) {
                 warning("In this version of the package, nproc is not supported. 
                         All available processors will be used.")
-                obj <- distribute_seqs(obj)
+                obj <- distribute_seqs(obj = obj, nproc = nproc)
                 distributed <- TRUE
         }
         profiles <- generate_profiles(obj = obj, klen = klen, 
