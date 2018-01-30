@@ -369,7 +369,7 @@ generate_profiles.character <- function(obj, klen = 6,
                 seqs <- readAAStringSet(obj)
                 distributed <- FALSE
         }
-        profiles <- generate_profiles.AAStringSet(seqs = seqs, klen = klen, 
+        profiles <- generate_profiles.AAStringSet(obj = seqs, klen = klen, 
                                                   parallel = parallel, 
                                                   nproc = nproc, 
                                                   normalize = normalize, 
@@ -636,10 +636,10 @@ generate_instances.character <- function(obj, labeled = TRUE,
                                          distributed = FALSE) {
 	print("ingenerate_instances.char")
         if (parallel & !distributed) {
-                seqs <- parallel_read_AA(fasta_filename, nproc)
+                seqs <- parallel_read_AA(obj, nproc)
                 distributed <- TRUE
         } else {
-                seqs <- readAAStringSet(fasta_filename)
+                seqs <- readAAStringSet(obj)
         }
         generate_instances.AAStringSet(seqs, labeled = labeled, 
                            parallel = parallel, 
