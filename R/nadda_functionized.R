@@ -210,7 +210,52 @@ count_kmers <- function(obj, klen = 6, parallel = TRUE,
         UseMethod("count_kmers", obj)
         #return(kmers)
 }
-#nah' @S3method count_kmers character
+#' Counting k-mers in the dataset.
+#' @description counts the number of times each k-mer appears in the 
+#' dataset and returns a dataframe indicating 
+#' these counts.
+#' Each k-mer in each sequence is counted
+#' at most once, i.e., if there are multiple occureneces of a k-mer in one 
+#' sequence, only one of them is counted.
+#' @param obj A filepath to a fasta file containing protein sequences or an 
+#' AAStringSet object containing the sequences
+#' @param parallel Indicating whether the operation should be p
+#' erformed in parallel
+#' @param nproc Currently not supported. Will use all processors 
+#' available to the job on cluster
+#' @param klen length of the k-mers to be used
+#' @param distributed A boolean, indicating whether the data is 
+#' spread among multiple processors.
+#' @details If \emph{parallel} is set to \strong{TRUE} and  
+#' \emph{distributed} is set to \strong{FALSE}, the method 
+#' distributes the data between different 
+#' processors and sets \emph{distributed} to \strong{TRUE}. 
+#' Otherwise, if the \emph{parallel} is set to \strong{FALSE} 
+#' and \emph{distributed} is set to \strong{TRUE}, 
+#' the kmer frequencies are computed on each processor separately 
+#' but then communicated between each other, and therefore 
+#' at the end all processors have the same set of frequencies 
+#' for kmers stored, using which they will generate frequency 
+#' profiles for their chunk of sequences.
+#' If you prefer to run the operation in serial, set both 
+#' \emph{parallel} and \emph{distributed} to \strong{FALSE}.
+#' @return Returns a dataframe with two columns. Each row includes 
+#' one k-mer and an integer indicating the number of 
+#' times that k-mer appears in the input dataset. Each k-mer in 
+#' each sequence is counted
+#' at most once, i.e., if there are multiple occureneces of a 
+#' k-mer in one sequence, only one of them is counted.
+#!' @seealso \code{\link{generate_instances}} for generation of 
+#!' training and test instances for each index in each 
+#!' sequence.\cr
+#!' \code{\link{generate_profiles} for generation of sequence k-mer 
+#!' frequency profiles for each sequence}\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
+#' @author Armen Abnousi
+#' @example sandbox/count_kmers_ex.R
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
+#' @export
 count_kmers.character <- function(obj, klen = 6, parallel = TRUE, 
                                   nproc = ifelse(parallel, comm.size(), 1), 
                                   distributed = FALSE) {
@@ -226,7 +271,52 @@ count_kmers.character <- function(obj, klen = 6, parallel = TRUE,
                                          nproc = nproc, 
                                          distributed = distributed)
 }
-#nah' @S3method count_kmers AAStringSet
+#' Counting k-mers in the dataset.
+#' @description counts the number of times each k-mer appears in the 
+#' dataset and returns a dataframe indicating 
+#' these counts.
+#' Each k-mer in each sequence is counted
+#' at most once, i.e., if there are multiple occureneces of a k-mer in one 
+#' sequence, only one of them is counted.
+#' @param obj A filepath to a fasta file containing protein sequences or an 
+#' AAStringSet object containing the sequences
+#' @param parallel Indicating whether the operation should be p
+#' erformed in parallel
+#' @param nproc Currently not supported. Will use all processors 
+#' available to the job on cluster
+#' @param klen length of the k-mers to be used
+#' @param distributed A boolean, indicating whether the data is 
+#' spread among multiple processors.
+#' @details If \emph{parallel} is set to \strong{TRUE} and  
+#' \emph{distributed} is set to \strong{FALSE}, the method 
+#' distributes the data between different 
+#' processors and sets \emph{distributed} to \strong{TRUE}. 
+#' Otherwise, if the \emph{parallel} is set to \strong{FALSE} 
+#' and \emph{distributed} is set to \strong{TRUE}, 
+#' the kmer frequencies are computed on each processor separately 
+#' but then communicated between each other, and therefore 
+#' at the end all processors have the same set of frequencies 
+#' for kmers stored, using which they will generate frequency 
+#' profiles for their chunk of sequences.
+#' If you prefer to run the operation in serial, set both 
+#' \emph{parallel} and \emph{distributed} to \strong{FALSE}.
+#' @return Returns a dataframe with two columns. Each row includes 
+#' one k-mer and an integer indicating the number of 
+#' times that k-mer appears in the input dataset. Each k-mer in 
+#' each sequence is counted
+#' at most once, i.e., if there are multiple occureneces of a 
+#' k-mer in one sequence, only one of them is counted.
+#!' @seealso \code{\link{generate_instances}} for generation of 
+#!' training and test instances for each index in each 
+#!' sequence.\cr
+#!' \code{\link{generate_profiles} for generation of sequence k-mer 
+#!' frequency profiles for each sequence}\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
+#' @author Armen Abnousi
+#' @example sandbox/count_kmers_ex.R
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
+#' @export
 count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
                                     nproc = ifelse(parallel, comm.size(), 1), 
                                     distributed = FALSE) {
@@ -372,7 +462,60 @@ generate_profiles <- function(obj, klen = 6, parallel = TRUE,
         UseMethod("generate_profiles", obj)
         #return(profiles)
 }
-#nah' @S3method generate_profiles character
+#' Generate Protein k-mer frequency profiles
+#' @description constructs a dataframe where each row corresponds to one 
+#' index of one protein sequence from the 
+#' input dataset. It can be used to generate training and test sets to train 
+#' a NADDA classification model or to 
+#' predict the conserved indices of input sequences based on a trained model.
+#' @param obj A filepath to a fasta file containing protein sequences or an 
+#' AAStringSet object containing the sequences
+#' @param parallel Indicating whether the operation should be 
+#' performed in parallel
+#' @param nproc Currently not supported. Will use all processors 
+#' available to the job on cluster
+#' @param klen length of the k-mers to be used
+#' @param normalize A boolean value, indicating whether the k-mer 
+#' frequencies should be normalized
+#' @param impute A boolean value, indicating whether imputed values 
+#' should be inserted at the beginning and the 
+#' end of the profiles
+#' @param winlen An integer, size the window used for generation 
+#' of each instance
+#' @param imputing_length An integer, number of frequencies from the 
+#' beginning and end of a sequence profile that should 
+#' be used to impute the new values
+#' @param distributed A boolean, indicating whether the data is 
+#' spread among multiple processors.
+#' @details If \emph{parallel} is set to \strong{TRUE} and  
+#' \emph{distributed} is set to \strong{FALSE}, the method 
+#' distributes the data between different 
+#' processors and sets \emph{distributed} to \strong{TRUE}. 
+#' Otherwise, if the \emph{parallel} is set to \strong{FALSE} 
+#' and \emph{distributed} is set to \strong{TRUE}, 
+#' the kmer frequencies are computed on each processor separately 
+#' but then communicated between each other, and therefore 
+#' at the end all processors have the same set of frequencies for 
+#' kmers stored, using which they will generate frequency 
+#' profiles for their chunk of sequences.
+#' If you prefer to run the operation in serial, set both \emph{parallel} 
+#' and \emph{distributed} to \strong{FALSE}.
+#' @return Returns a list with one vector for each protein sequence in 
+#' the dataset. A vector for sequence \emph{s} 
+#' contains |s| - klen + 1
+#' indices if \emph{impute} is set to \strong{FALSE} (where |s| is the 
+#' length of the sequence). Otherwise it will 
+#' include one index for each position in the sequence but also 
+#' \emph{winlen \%\\\% 2} indices at 
+#' the beginning and end of each sequence.
+#!' @seealso \code{\link{generate_instances}} for generation of 
+#!' training and test instances for each index in each sequence\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
+#' @author Armen Abnousi
+#' @example sandbox/generate_profiles_ex.R
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
+#' @export
 generate_profiles.character <- function(obj, klen = 6, parallel = TRUE, 
                                         nproc = ifelse(parallel, comm.size(), 1), 
                                         normalize = TRUE, 
@@ -397,7 +540,60 @@ generate_profiles.character <- function(obj, klen = 6, parallel = TRUE,
                                                   imputing_length = imputing_length, 
                                                   distributed = distributed)
 }
-#nah' @S3method generate_profiles AAStringSet
+#' Generate Protein k-mer frequency profiles
+#' @description constructs a dataframe where each row corresponds to one 
+#' index of one protein sequence from the 
+#' input dataset. It can be used to generate training and test sets to train 
+#' a NADDA classification model or to 
+#' predict the conserved indices of input sequences based on a trained model.
+#' @param obj A filepath to a fasta file containing protein sequences or an 
+#' AAStringSet object containing the sequences
+#' @param parallel Indicating whether the operation should be 
+#' performed in parallel
+#' @param nproc Currently not supported. Will use all processors 
+#' available to the job on cluster
+#' @param klen length of the k-mers to be used
+#' @param normalize A boolean value, indicating whether the k-mer 
+#' frequencies should be normalized
+#' @param impute A boolean value, indicating whether imputed values 
+#' should be inserted at the beginning and the 
+#' end of the profiles
+#' @param winlen An integer, size the window used for generation 
+#' of each instance
+#' @param imputing_length An integer, number of frequencies from the 
+#' beginning and end of a sequence profile that should 
+#' be used to impute the new values
+#' @param distributed A boolean, indicating whether the data is 
+#' spread among multiple processors.
+#' @details If \emph{parallel} is set to \strong{TRUE} and  
+#' \emph{distributed} is set to \strong{FALSE}, the method 
+#' distributes the data between different 
+#' processors and sets \emph{distributed} to \strong{TRUE}. 
+#' Otherwise, if the \emph{parallel} is set to \strong{FALSE} 
+#' and \emph{distributed} is set to \strong{TRUE}, 
+#' the kmer frequencies are computed on each processor separately 
+#' but then communicated between each other, and therefore 
+#' at the end all processors have the same set of frequencies for 
+#' kmers stored, using which they will generate frequency 
+#' profiles for their chunk of sequences.
+#' If you prefer to run the operation in serial, set both \emph{parallel} 
+#' and \emph{distributed} to \strong{FALSE}.
+#' @return Returns a list with one vector for each protein sequence in 
+#' the dataset. A vector for sequence \emph{s} 
+#' contains |s| - klen + 1
+#' indices if \emph{impute} is set to \strong{FALSE} (where |s| is the 
+#' length of the sequence). Otherwise it will 
+#' include one index for each position in the sequence but also 
+#' \emph{winlen \%\\\% 2} indices at 
+#' the beginning and end of each sequence.
+#!' @seealso \code{\link{generate_instances}} for generation of 
+#!' training and test instances for each index in each sequence\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
+#' @author Armen Abnousi
+#' @example sandbox/generate_profiles_ex.R
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
+#' @export
 generate_profiles.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
                                           nproc = ifelse(parallel, 
                                                          comm.size(), 1), 
@@ -647,7 +843,72 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
         UseMethod("generate_instances", obj)
         #return(instances)
 }
-#nah' @S3method generate_instances character
+#' Generate Instances for Indices in Protein Sequences
+#' @description Tconstructs a dataframe where each row corresponds to one 
+#' index of one protein sequence from the 
+#' input dataset. It can be used to generate training and test sets to train 
+#' a NADDA classification model or to 
+#' predict the conserved indices of input sequences based on a trained model.
+#' @param obj A filepath to a fasta file containing protein sequences or an 
+#' AAStringSet object containing the sequences
+#' @param labeled TRUE if the method is called to construct a training set 
+#' using a Pfam or InterPro labels or FALSE 
+#' otherwise.
+#' @param parallel Indicating whether the operation should be performed in 
+#' parallel
+#' @param nproc Currently not supported. Will use all processors available 
+#' to the job on cluster
+#' @param groundtruth A character string. Can be Pfam or InterPro
+#' @param truth_filename The filepath to the labels file for generating the 
+#' training set based on it
+#' @param klen length of the k-mers to be used
+#' @param normalize A boolean value, indicating whether the k-mer frequencies 
+#' should be normalized
+#' @param impute A boolean value, indicating whether imputed values should be 
+#' inserted at the beginning and the 
+#' end of the profiles
+#' @param winlen An integer, size the window used for generation of each 
+#' instance
+#' @param imputing_length An integer, number of frequencies from the beginning 
+#' and end of a sequence profile that should 
+#' be used to impute the new values
+#' @param distributed A boolean, indicating whether the data is spread among 
+#' multiple processors.
+#' @details Current version only supports Pfam and InterPro output files for 
+#' generation of training set. The output 
+#' from Pfam output file needs to be tabularized (replacing spaces with tabs).
+#' 
+#' If \emph{parallel} is set to \strong{TRUE} and  \emph{distributed} is set 
+#' to \strong{FALSE}, the method distributes 
+#' the data between different 
+#' processors and sets \emph{distributed} to \strong{TRUE}. Otherwise, if the 
+#' \emph{parallel} is set to \strong{FALSE} 
+#' and \emph{distributed} is set to \strong{TRUE}, 
+#' the kmer frequencies are computed on each processor separately but then 
+#' communicated between each other, and therefore 
+#' at the end all processors have the same set of frequencies for kmers 
+#' stored, using which they will generate frequency 
+#' profiles and instances of their chunk of sequences.
+#' If you prefer to run the operation in serial, set both \emph{parallel} 
+#' and \emph{distributed} to \strong{FALSE}.
+#' @return Returns a dataframe with one row for each instance. Each row 
+#' contains \emph{winlen} k-mer frequencies around an 
+#' index of a protein. The index number is stored in \emph{position} column. 
+#' Name of the sequence is stored in \emph{name} 
+#' column. 
+#' If a training set is constructed, one column indicating whether it is a 
+#' conserved index or not and a second column 
+#' indicating the number of proteins in the dataset that have a similar 
+#' conserved region are added to the returned 
+#' dataframe.
+#!' @seealso \code{\link{generate_profiles}} for generation of 
+#!' frequency profiles for each sequence\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
+#' @author Armen Abnousi
+#' @example sandbox/generate_instances_ex.R
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
+#' @export
 generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE, 
                                          nproc = ifelse(parallel, 
                                                         comm.size(), 1), 
@@ -674,7 +935,72 @@ generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE,
                            imputing_length = imputing_length, 
                            distributed = distributed)
 }
-#nah' @S3method generate_instances AAStringSet
+#' Generate Instances for Indices in Protein Sequences
+#' @description Tconstructs a dataframe where each row corresponds to one 
+#' index of one protein sequence from the 
+#' input dataset. It can be used to generate training and test sets to train 
+#' a NADDA classification model or to 
+#' predict the conserved indices of input sequences based on a trained model.
+#' @param obj A filepath to a fasta file containing protein sequences or an 
+#' AAStringSet object containing the sequences
+#' @param labeled TRUE if the method is called to construct a training set 
+#' using a Pfam or InterPro labels or FALSE 
+#' otherwise.
+#' @param parallel Indicating whether the operation should be performed in 
+#' parallel
+#' @param nproc Currently not supported. Will use all processors available 
+#' to the job on cluster
+#' @param groundtruth A character string. Can be Pfam or InterPro
+#' @param truth_filename The filepath to the labels file for generating the 
+#' training set based on it
+#' @param klen length of the k-mers to be used
+#' @param normalize A boolean value, indicating whether the k-mer frequencies 
+#' should be normalized
+#' @param impute A boolean value, indicating whether imputed values should be 
+#' inserted at the beginning and the 
+#' end of the profiles
+#' @param winlen An integer, size the window used for generation of each 
+#' instance
+#' @param imputing_length An integer, number of frequencies from the beginning 
+#' and end of a sequence profile that should 
+#' be used to impute the new values
+#' @param distributed A boolean, indicating whether the data is spread among 
+#' multiple processors.
+#' @details Current version only supports Pfam and InterPro output files for 
+#' generation of training set. The output 
+#' from Pfam output file needs to be tabularized (replacing spaces with tabs).
+#' 
+#' If \emph{parallel} is set to \strong{TRUE} and  \emph{distributed} is set 
+#' to \strong{FALSE}, the method distributes 
+#' the data between different 
+#' processors and sets \emph{distributed} to \strong{TRUE}. Otherwise, if the 
+#' \emph{parallel} is set to \strong{FALSE} 
+#' and \emph{distributed} is set to \strong{TRUE}, 
+#' the kmer frequencies are computed on each processor separately but then 
+#' communicated between each other, and therefore 
+#' at the end all processors have the same set of frequencies for kmers 
+#' stored, using which they will generate frequency 
+#' profiles and instances of their chunk of sequences.
+#' If you prefer to run the operation in serial, set both \emph{parallel} 
+#' and \emph{distributed} to \strong{FALSE}.
+#' @return Returns a dataframe with one row for each instance. Each row 
+#' contains \emph{winlen} k-mer frequencies around an 
+#' index of a protein. The index number is stored in \emph{position} column. 
+#' Name of the sequence is stored in \emph{name} 
+#' column. 
+#' If a training set is constructed, one column indicating whether it is a 
+#' conserved index or not and a second column 
+#' indicating the number of proteins in the dataset that have a similar 
+#' conserved region are added to the returned 
+#' dataframe.
+#!' @seealso \code{\link{generate_profiles}} for generation of 
+#!' frequency profiles for each sequence\cr
+#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' single file
+#' @author Armen Abnousi
+#' @example sandbox/generate_instances_ex.R
+#!' @references{\insertRef{abnousi2016fast}{naddaR}}
+#' @export
 generate_instances.AAStringSet <- function(obj, labeled = TRUE, parallel = TRUE, 
                                            nproc = ifelse(parallel, 
                                                           comm.size(), 1), 
