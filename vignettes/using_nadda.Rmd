@@ -47,9 +47,13 @@ To generate a training or test set, use the function *generate_instances()*. The
 
 In the following example we generate a dataset of three protein sequences, calling them "seq1", "seq2", and "seq3". Then we use the *generate_instances* method to create a test set.
 
-```{r, message=FALSE}
+```{r}
 library(naddaR)
+print("now printing that")
+methods("generate_instances")
+print("passed test print statement")
 library(Biostrings)
+library(data.table)
 ```
 ```{r}
 ## Generate a set of three example protein sequences

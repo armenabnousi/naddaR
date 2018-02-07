@@ -55,11 +55,14 @@ If you prefer to run the operation in serial, set both
 }
 \examples{
 library(Biostrings)
+library(data.table)
 ## Generate a set of three example protein sequences
 seqs <- AAStringSet(c("seq1"="MLVVD",
                       "seq2"="PVVRA",
                       "seq3"="LVVR"))
 ## Count the kmers and generate a dataframe of the frequencies
+str(seqs)
+length(seqs)
 freqs <- count_kmers(seqs, klen = 3, parallel = FALSE)
 head(freqs)
 ##    kmer count

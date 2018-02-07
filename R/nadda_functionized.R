@@ -23,19 +23,19 @@ parallel_read_AA <- function(fasta_filename,
         seqs <- distribute_seqs(obj = seqs, nproc = nproc)
 }
 distribute_seqs <- function(obj, nproc = comm.size()) {
-        if (class(obj) == "character") {
-                seqs <- distribute_seqs.character(obj = obj, nproc = nproc)
-        } else if (class(obj) == "AAStringSet") {
-                seqs <- distribute_seqs.AAStringSet(obj = obj, nproc = nproc)
-        }
-        #UseMethod("distribute_seqs", obj)
-        seqs
+        #if (class(obj) == "character") {
+        #        seqs <- distribute_seqs.character(obj = obj, nproc = nproc)
+        #} else if (class(obj) == "AAStringSet") {
+        #        seqs <- distribute_seqs.AAStringSet(obj = obj, nproc = nproc)
+        #}
+        UseMethod("distribute_seqs", obj)
+        #return(seqs)
 }
 distribute_seqs.character <- function(obj, 
                                       nproc = comm.size()) {
 	#print("indistribute_seqs.char")
         seqs <- readAAStringSet(obj)
-        seqs <- distribute_seqs.AAStringSet(obj = seqs, nproc = nproc)
+        seqs <- distribute_seqs(obj = seqs, nproc = nproc)
 }
 distribute_seqs.AAStringSet <- function(obj, 
                                         nproc = comm.size()) {
@@ -83,15 +83,15 @@ generate_seqs_kmers <- function(seqs, klen) {
 kmerize <- function(obj, klen = 6, parallel = TRUE, 
                     nproc = ifelse(parallel, comm.size(), 1), 
                     distributed = FALSE) {
-        if (class(obj) == "character") {
-                kmers <- kmerize.character(obj = obj, klen = klen, parallel = parallel, 
-                                  nproc = nproc, distributed = distributed)
-        } else if (class(obj) == "AAStringSet") {
-                kmers <- kmerize.AAStringSet(obj = obj, klen = klen, parallel = parallel, 
-                                    nproc = nproc, distributed = distributed)
-        }
-        #UseMethod("kmerize", obj)        
-        return(kmers)
+        #if (class(obj) == "character") {
+        #        kmers <- kmerize.character(obj = obj, klen = klen, parallel = parallel, 
+        #                          nproc = nproc, distributed = distributed)
+        #} else if (class(obj) == "AAStringSet") {
+        #        kmers <- kmerize.AAStringSet(obj = obj, klen = klen, parallel = parallel, 
+        #                            nproc = nproc, distributed = distributed)
+        #}
+        UseMethod("kmerize", obj)        
+        #return(kmers)
 }
 kmerize.character <- function(obj, klen = 6, parallel = TRUE, 
                               nproc = ifelse(parallel, comm.size(), 1), 
@@ -102,7 +102,7 @@ kmerize.character <- function(obj, klen = 6, parallel = TRUE,
         } else {
                 seqs <- readAAStringSet(obj)
         }
-        kmers <- kmerize.AAStringSet(obj = obj, klen = klen, 
+        kmers <- kmerize(obj = obj, klen = klen, 
                                      parallel = parallel, 
                                      nproc = nproc, 
                                      distributed = distributed)
@@ -191,24 +191,26 @@ gather_kmers <- function(local_names, local_counts) {
 #' @author Armen Abnousi
 #' @example sandbox/count_kmers_ex.R
 #!' @references{\insertRef{abnousi2016fast}{naddaR}}
-#' @export
+#' @export count_kmers
 count_kmers <- function(obj, klen = 6, parallel = TRUE, 
                         nproc = ifelse(parallel, comm.size(), 1), 
                         distributed = FALSE) {
         #print("incount_kmers")
-        if(class(obj) == "character") {
-                kmers <- count_kmers.character(obj = obj, klen = klen, 
-                                      parallel = parallel, 
-                                      nproc = nproc, 
-                                      distributed = distributed)
-        } else if(class(obj) == "AAStringSet") {
-                kmers <- count_kmers.AAStringSet(obj = obj, klen = klen, 
-                                        parallel = parallel, 
-                                        nproc = nproc, 
-                                        distributed = distributed)
-        }
-        return(kmers)
+        #if(class(obj) == "character") {
+        #        kmers <- count_kmers.character(obj = obj, klen = klen, 
+        #                              parallel = parallel, 
+        #                              nproc = nproc, 
+        #                              distributed = distributed)
+        #} else if(class(obj) == "AAStringSet") {
+        #        kmers <- count_kmers.AAStringSet(obj = obj, klen = klen, 
+        #                                parallel = parallel, 
+        #                                nproc = nproc, 
+        #                                distributed = distributed)
+        #}
+        UseMethod("count_kmers", obj)
+        #return(kmers)
 }
+#nah' @S3method count_kmers character
 count_kmers.character <- function(obj, klen = 6, parallel = TRUE, 
                                   nproc = ifelse(parallel, comm.size(), 1), 
                                   distributed = FALSE) {
@@ -219,11 +221,12 @@ count_kmers.character <- function(obj, klen = 6, parallel = TRUE,
         } else {
                 seqs <- AAStringSet(readAAStringSet(obj))
         }
-        freqs <- count_kmers.AAStringSet(obj = obj, klen = klen, 
+        freqs <- count_kmers(obj = obj, klen = klen, 
                                          parallel = parallel, 
                                          nproc = nproc, 
                                          distributed = distributed)
 }
+#nah' @S3method count_kmers AAStringSet
 count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
                                     nproc = ifelse(parallel, comm.size(), 1), 
                                     distributed = FALSE) {
@@ -347,28 +350,29 @@ generate_profiles <- function(obj, klen = 6, parallel = TRUE,
                               winlen = 20, imputing_length = winlen %/% 2, 
                               distributed = FALSE) {
         #print("ingenerate_profiles")
-	if (class(obj) == "character") {
-	        profiles <- generate_profiles.character(obj = obj, klen = klen, 
-	                                    parallel = parallel, 
-	                                    nproc = nproc, 
-	                                    normalize = normalize, 
-	                                    impute = impute, 
-	                                    winlen = winlen, 
-	                                    imputing_length = imputing_length, 
-	                                    distributed = distributed)
-	} else if (class(obj) == "AAStringSet") {
-	        profiles <- generate_profiles.AAStringSet(obj = obj, klen = klen, 
-	                                      parallel = parallel, 
-	                                      nproc = nproc, 
-	                                      normalize = normalize, 
-	                                      impute = impute, 
-	                                      winlen = winlen, 
-	                                      imputing_length = imputing_length, 
-	                                      distributed = distributed)
-	}
-        #UseMethod("generate_profiles", obj)
-        return(profiles)
+	#if (class(obj) == "character") {
+	#        profiles <- generate_profiles.character(obj = obj, klen = klen, 
+	#                                    parallel = parallel, 
+	#                                    nproc = nproc, 
+	#                                    normalize = normalize, 
+	#                                    impute = impute, 
+	#                                    winlen = winlen, 
+	#                                    imputing_length = imputing_length, 
+	#                                    distributed = distributed)
+	#} else if (class(obj) == "AAStringSet") {
+	#        profiles <- generate_profiles.AAStringSet(obj = obj, klen = klen, 
+	#                                      parallel = parallel, 
+	#                                      nproc = nproc, 
+	#                                      normalize = normalize, 
+	#                                      impute = impute, 
+	#                                     winlen = winlen, 
+	#                                      imputing_length = imputing_length, 
+	#                                      distributed = distributed)
+	#}
+        UseMethod("generate_profiles", obj)
+        #return(profiles)
 }
+#nah' @S3method generate_profiles character
 generate_profiles.character <- function(obj, klen = 6, parallel = TRUE, 
                                         nproc = ifelse(parallel, comm.size(), 1), 
                                         normalize = TRUE, 
@@ -384,7 +388,7 @@ generate_profiles.character <- function(obj, klen = 6, parallel = TRUE,
                 seqs <- readAAStringSet(obj)
                 distributed <- FALSE
         }
-        profiles <- generate_profiles.AAStringSet(obj = seqs, klen = klen, 
+        profiles <- generate_profiles(obj = seqs, klen = klen, 
                                                   parallel = parallel, 
                                                   nproc = nproc, 
                                                   normalize = normalize, 
@@ -393,6 +397,7 @@ generate_profiles.character <- function(obj, klen = 6, parallel = TRUE,
                                                   imputing_length = imputing_length, 
                                                   distributed = distributed)
 }
+#nah' @S3method generate_profiles AAStringSet
 generate_profiles.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
                                           nproc = ifelse(parallel, 
                                                          comm.size(), 1), 
@@ -615,33 +620,34 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
                                imputing_length = winlen %/% 2, 
                                distributed = FALSE) {
         #print("ingenerate_instances")
-        if (class(obj) == "character") {
-                instances <- generate_instances.character(obj = obj, 
-                                                          labeled = labeled, 
-                                             parallel = parallel, 
-                                             nproc = nproc, 
-                                             groundtruth = groundtruth, 
-                                             truth_filename = truth_filename, 
-                                             klen = klen, normalize = normalize, 
-                                             impute = impute, winlen = winlen, 
-                                             imputing_length = imputing_length, 
-                                             distributed = distributed)
-        } else if (class(obj) == "AAStringSet") {
-                instances <- generate_instances.AAStringSet(obj = obj, 
-                                               labeled = labeled, 
-                                               parallel = parallel, 
-                                               nproc = nproc, 
-                                               groundtruth = groundtruth, 
-                                               truth_filename = truth_filename, 
-                                               klen = klen, 
-                                               normalize = normalize, 
-                                               impute = impute, winlen = winlen, 
-                                               imputing_length = imputing_length, 
-                                               distributed = distributed)
-        }
-        #UseMethod("generate_instances", obj)
-        return(instances)
+        #if (class(obj) == "character") {
+        #        instances <- generate_instances.character(obj = obj, 
+        #                                                  labeled = labeled, 
+        #                                     parallel = parallel, 
+        #                                     nproc = nproc, 
+        #                                     groundtruth = groundtruth, 
+        #                                     truth_filename = truth_filename, 
+        #                                     klen = klen, normalize = normalize, 
+        #                                     impute = impute, winlen = winlen, 
+        #                                     imputing_length = imputing_length, 
+        #                                     distributed = distributed)
+        #} else if (class(obj) == "AAStringSet") {
+        #        instances <- generate_instances.AAStringSet(obj = obj, 
+        #                                       labeled = labeled, 
+        #                                       parallel = parallel, 
+        #                                       nproc = nproc, 
+        #                                       groundtruth = groundtruth, 
+        #                                       truth_filename = truth_filename, 
+        #                                       klen = klen, 
+        #                                       normalize = normalize, 
+        #                                       impute = impute, winlen = winlen, 
+        #                                       imputing_length = imputing_length, 
+        #                                       distributed = distributed)
+        #}
+        UseMethod("generate_instances", obj)
+        #return(instances)
 }
+#nah' @S3method generate_instances character
 generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE, 
                                          nproc = ifelse(parallel, 
                                                         comm.size(), 1), 
@@ -651,23 +657,24 @@ generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE,
                                          impute = TRUE, winlen = 20, 
                                          imputing_length = winlen %/% 2, 
                                          distributed = FALSE) {
-	print("ingenerate_instances.char")
+        print("ingenerate_instances.char")
         if (parallel & !distributed) {
                 seqs <- parallel_read_AA(obj, nproc)
                 distributed <- TRUE
         } else {
                 seqs <- readAAStringSet(obj)
         }
-        generate_instances.AAStringSet(obj = seqs, labeled = labeled, 
-                                       parallel = parallel, 
-                                       nproc = nproc, 
-                                       groundtruth = groundtruth, 
-                                       truth_filename = truth_filename, 
-                                       klen = klen, normalize = normalize, 
-                                       impute = impute, winlen = winlen, 
-                                       imputing_length = imputing_length, 
-                                       distributed = distributed)
+        generate_instances(obj = seqs, labeled = labeled, 
+                           parallel = parallel, 
+                           nproc = nproc, 
+                           groundtruth = groundtruth, 
+                           truth_filename = truth_filename, 
+                           klen = klen, normalize = normalize, 
+                           impute = impute, winlen = winlen, 
+                           imputing_length = imputing_length, 
+                           distributed = distributed)
 }
+#nah' @S3method generate_instances AAStringSet
 generate_instances.AAStringSet <- function(obj, labeled = TRUE, parallel = TRUE, 
                                            nproc = ifelse(parallel, 
                                                           comm.size(), 1), 
@@ -677,7 +684,7 @@ generate_instances.AAStringSet <- function(obj, labeled = TRUE, parallel = TRUE,
                                            impute = TRUE, winlen = 20, 
                                            imputing_length = winlen %/% 2, 
                                            distributed = FALSE) {
-	#print("ingenerate_instances.AA")
+        #print("ingenerate_instances.AA")
         imputed_length <- winlen %/% 2
         if (parallel & !distributed) {
                 warning("In this version of the package, nproc is not supported. 
