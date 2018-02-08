@@ -6,6 +6,7 @@
 #' @importFrom pbdMPI allgather
 #' @importFrom pbdMPI finalize
 #' @import Biostrings
+#' @import data.table
 #' @importFrom Biostrings readAAStringSet
 #' @importFrom data.table data.table
 #' @importFrom data.table setkey
@@ -14,6 +15,7 @@
 #' @importFrom data.table setorder
 #' @importFrom stats aggregate
 #' @importFrom utils read.csv
+#' @importFrom utils installed.packages
 #' @importFrom Rdpack reprompt
 
 parallel_read_AA <- function(fasta_filename, 
@@ -97,8 +99,15 @@ kmerize.character <- function(obj, klen = 6, parallel = TRUE,
                               nproc = ifelse(parallel, comm.size(), 1), 
                               distributed = FALSE) {
         if (parallel) {
-                seqs <- parallel_read_AA(obj, nproc)
-                distributed <- TRUE
+                if ("pbdMPI" %in% installed.packages()[,1]) {
+                        seqs <- parallel_read_AA(obj, nproc)
+                        distributed <- TRUE
+                } else {
+                        stop("Please install MPI and pbdMPI in order to 
+                                use the parallel functionality of this 
+                                package. Alternatively, you can set parallel 
+                                to FALSE.")
+                }
         } else {
                 seqs <- readAAStringSet(obj)
         }
@@ -261,8 +270,15 @@ count_kmers.character <- function(obj, klen = 6, parallel = TRUE,
                                   distributed = FALSE) {
         #print("incount_kmers.char")
         if (parallel) {
-                seqs <- parallel_read_AA(obj, nproc)
-                distributed <- TRUE
+                if ("pbdMPI" %in% installed.packages()[,1]) {
+                        seqs <- parallel_read_AA(obj, nproc)
+                        distributed <- TRUE
+                } else {
+                        stop("Please install MPI and pbdMPI in order to 
+                                use the parallel functionality of this 
+                                package. Alternatively, you can set parallel 
+                                to FALSE.")
+                }
         } else {
                 seqs <- AAStringSet(readAAStringSet(obj))
         }
@@ -324,8 +340,15 @@ count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE,
         warning(paste("number of processors,", nproc, ", is not supported in 
                       count_kmers function. Using all available processors."))
         if (parallel & !distributed) {
-                obj <- distribute_seqs(obj = obj, nproc = nproc)
-                distributed <- TRUE
+                if ("pbdMPI" %in% installed.packages()[,1]) {
+                        obj <- distribute_seqs(obj = obj, nproc = nproc)
+                        distributed <- TRUE
+                } else {
+                        stop("Please install MPI and pbdMPI in order to 
+                                use the parallel functionality of this 
+                                package. Alternatively, you can set parallel 
+                                to FALSE.")
+                }
         }
         kmers <- kmerize(obj = obj, klen = klen, 
                          parallel = parallel, nproc = nproc, 
@@ -525,8 +548,15 @@ generate_profiles.character <- function(obj, klen = 6, parallel = TRUE,
                                         distributed = FALSE) {
         print("ingenerate_profiles.char")
         if (parallel & !distributed) {
-                seqs <- parallel_read_AA(obj, nproc)
-                distributed <- TRUE
+                if ("pbdMPI" %in% installed.packages()[,1]) {
+                        seqs <- parallel_read_AA(obj, nproc)
+                        distributed <- TRUE
+                } else {
+                        stop("Please install MPI and pbdMPI in order to 
+                                use the parallel functionality of this 
+                                package. Alternatively, you can set parallel 
+                                to FALSE.")
+                }
         } else {
                 seqs <- readAAStringSet(obj)
                 distributed <- FALSE
@@ -605,8 +635,15 @@ generate_profiles.AAStringSet <- function(obj, klen = 6, parallel = TRUE,
         #print("ingenerate_profiles.AA")
         imputed_length <- winlen %/% 2
         if (parallel & !distributed) {
-                obj <- distribute_seqs(obj = obj, nproc = nproc)
-                distributed <- TRUE
+                if ("pbdMPI" %in% installed.packages()[,1]) {
+                        obj <- distribute_seqs(obj = obj, nproc = nproc)
+                        distributed <- TRUE
+                } else {
+                        stop("Please install MPI and pbdMPI in order to 
+                                use the parallel functionality of this 
+                                package. Alternatively, you can set parallel 
+                                to FALSE.")
+                }
         }
         freqs <- count_kmers(obj = obj, klen = klen, parallel = parallel, 
                              nproc = nproc, distributed = distributed)
@@ -920,8 +957,15 @@ generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE,
                                          distributed = FALSE) {
         print("ingenerate_instances.char")
         if (parallel & !distributed) {
-                seqs <- parallel_read_AA(obj, nproc)
-                distributed <- TRUE
+                if ("pbdMPI" %in% installed.packages()[,1]) {
+                        seqs <- parallel_read_AA(obj, nproc)
+                        distributed <- TRUE
+                } else {
+                        stop("Please install MPI and pbdMPI in order to 
+                                use the parallel functionality of this 
+                                package. Alternatively, you can set parallel 
+                                to FALSE.")
+                }
         } else {
                 seqs <- readAAStringSet(obj)
         }
@@ -1013,10 +1057,18 @@ generate_instances.AAStringSet <- function(obj, labeled = TRUE, parallel = TRUE,
         #print("ingenerate_instances.AA")
         imputed_length <- winlen %/% 2
         if (parallel & !distributed) {
-                warning("In this version of the package, nproc is not supported. 
-                        All available processors will be used.")
-                obj <- distribute_seqs(obj = obj, nproc = nproc)
-                distributed <- TRUE
+                if ("pbdMPI" %in% installed.packages()[,1]) {
+                        warning("In this version of the package, nproc 
+                                is not supported. All available processors 
+                                will be used.")
+                        obj <- distribute_seqs(obj = obj, nproc = nproc)
+                        distributed <- TRUE
+                } else {
+                        stop("Please install MPI and pbdMPI in order to 
+                                use the parallel functionality of this 
+                                package. Alternatively, you can set parallel 
+                                to FALSE.")
+                }
         }
         profiles <- generate_profiles(obj = obj, klen = klen, 
                                       parallel = parallel, 
