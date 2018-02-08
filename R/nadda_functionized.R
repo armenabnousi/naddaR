@@ -1,10 +1,10 @@
 #library(pbdMPI)
 #library(data.table)
 #library(Biostrings)
-#' @importFrom pbdMPI comm.rank
-#' @importFrom pbdMPI comm.size
-#' @importFrom pbdMPI allgather
-#' @importFrom pbdMPI finalize
+#!' @importFrom pbdMPI comm.rank()
+#!' @importFrom pbdMPI comm.size
+#!' @importFrom pbdMPI allgather
+#!' @importFrom pbdMPI finalize()
 #' @import Biostrings
 #' @import data.table
 #' @importFrom Biostrings readAAStringSet
@@ -19,12 +19,12 @@
 #' @importFrom Rdpack reprompt
 
 parallel_read_AA <- function(fasta_filename, 
-                             nproc = comm.size()) {
+                             nproc = pbdMPI::comm.size()) {
         #print("in parallel_read_AA")
         seqs <- readAAStringSet(fasta_filename)
         seqs <- distribute_seqs(obj = seqs, nproc = nproc)
 }
-distribute_seqs <- function(obj, nproc = comm.size()) {
+distribute_seqs <- function(obj, nproc = pbdMPI::comm.size()) {
         #if (class(obj) == "character") {
         #        seqs <- distribute_seqs.character(obj = obj, nproc = nproc)
         #} else if (class(obj) == "AAStringSet") {
@@ -34,15 +34,15 @@ distribute_seqs <- function(obj, nproc = comm.size()) {
         #return(seqs)
 }
 distribute_seqs.character <- function(obj, 
-                                      nproc = comm.size()) {
+                                      nproc = pbdMPI::comm.size()) {
 	#print("indistribute_seqs.char")
         seqs <- readAAStringSet(obj)
         seqs <- distribute_seqs(obj = seqs, nproc = nproc)
 }
 distribute_seqs.AAStringSet <- function(obj, 
-                                        nproc = comm.size()) {
+                                        nproc = pbdMPI::comm.size()) {
 	print("indistribute_seq.AA")
-        rank <- as.integer(comm.rank())
+        rank <- as.integer(pbdMPI::comm.rank())
         l <- length(obj)
         share <- ceiling(l / nproc)
         if ( (nproc - 1) * share  > l) {
@@ -52,7 +52,7 @@ distribute_seqs.AAStringSet <- function(obj,
                                 "is unnecessary. Please rerun using only 
                                 as many as", used_proc, "processors."))
                 }
-                finalize()
+                pbdMPI::finalize()
                 quit()
         }
         if (rank < nproc) {
@@ -83,7 +83,7 @@ generate_seqs_kmers <- function(seqs, klen) {
         return(kmers)
 }
 kmerize <- function(obj, klen = 6, parallel = TRUE, 
-                    nproc = ifelse(parallel, comm.size(), 1), 
+                    nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                     distributed = FALSE) {
         #if (class(obj) == "character") {
         #        kmers <- kmerize.character(obj = obj, klen = klen, parallel = parallel, 
@@ -96,7 +96,7 @@ kmerize <- function(obj, klen = 6, parallel = TRUE,
         #return(kmers)
 }
 kmerize.character <- function(obj, klen = 6, parallel = TRUE, 
-                              nproc = ifelse(parallel, comm.size(), 1), 
+                              nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                               distributed = FALSE) {
         if (parallel) {
                 if ("pbdMPI" %in% installed.packages()[,1]) {
@@ -117,7 +117,7 @@ kmerize.character <- function(obj, klen = 6, parallel = TRUE,
                                      distributed = distributed)
 }
 kmerize.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
-                                nproc = ifelse(parallel, comm.size(), 1), 
+                                nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                                 distributed = FALSE) {
         #print("inkmerize.AA")
         if (parallel & !distributed) {
@@ -129,9 +129,9 @@ kmerize.AAStringSet <- function(obj, klen = 6, parallel = TRUE,
 gather_kmers <- function(local_names, local_counts) {
         #print("ingather_kmers")
         gathered_freqs <- list()
-        gathered_freqs <- allgather(local_counts)
+        gathered_freqs <- pbdMPI::allgather(local_counts)
         gathered_kmers <- list()
-        gathered_kmers <- allgather(local_names)
+        gathered_kmers <- pbdMPI::allgather(local_names)
         gathered_freqs <- unlist(gathered_freqs)
         gathered_kmers <- unlist(gathered_kmers)
         sum_received_freqs <- function(gathered_freqs, gathered_kmers) {
@@ -195,14 +195,14 @@ gather_kmers <- function(local_names, local_counts) {
 #!' sequence.\cr
 #!' \code{\link{generate_profiles} for generation of sequence k-mer 
 #!' frequency profiles for each sequence}\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/count_kmers_ex.R
 #!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export count_kmers
 count_kmers <- function(obj, klen = 6, parallel = TRUE, 
-                        nproc = ifelse(parallel, comm.size(), 1), 
+                        nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                         distributed = FALSE) {
         #print("incount_kmers")
         #if(class(obj) == "character") {
@@ -259,14 +259,14 @@ count_kmers <- function(obj, klen = 6, parallel = TRUE,
 #!' sequence.\cr
 #!' \code{\link{generate_profiles} for generation of sequence k-mer 
 #!' frequency profiles for each sequence}\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/count_kmers_ex.R
 #!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 count_kmers.character <- function(obj, klen = 6, parallel = TRUE, 
-                                  nproc = ifelse(parallel, comm.size(), 1), 
+                                  nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                                   distributed = FALSE) {
         #print("incount_kmers.char")
         if (parallel) {
@@ -327,14 +327,14 @@ count_kmers.character <- function(obj, klen = 6, parallel = TRUE,
 #!' sequence.\cr
 #!' \code{\link{generate_profiles} for generation of sequence k-mer 
 #!' frequency profiles for each sequence}\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/count_kmers_ex.R
 #!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 count_kmers.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
-                                    nproc = ifelse(parallel, comm.size(), 1), 
+                                    nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                                     distributed = FALSE) {
         #print("incount_kmers.AA")
         warning(paste("number of processors,", nproc, ", is not supported in 
@@ -450,14 +450,14 @@ generate_seqs_freq_profiles <- function(d, klen, freqs, normalize, impute,
 #' the beginning and end of each sequence.
 #!' @seealso \code{\link{generate_instances}} for generation of 
 #!' training and test instances for each index in each sequence\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_profiles_ex.R
 #!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 generate_profiles <- function(obj, klen = 6, parallel = TRUE, 
-                              nproc = ifelse(parallel, comm.size(), 1), 
+                              nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                               normalize = TRUE, 
                               impute = TRUE, 
                               winlen = 20, imputing_length = winlen %/% 2, 
@@ -533,14 +533,14 @@ generate_profiles <- function(obj, klen = 6, parallel = TRUE,
 #' the beginning and end of each sequence.
 #!' @seealso \code{\link{generate_instances}} for generation of 
 #!' training and test instances for each index in each sequence\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_profiles_ex.R
 #!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 generate_profiles.character <- function(obj, klen = 6, parallel = TRUE, 
-                                        nproc = ifelse(parallel, comm.size(), 1), 
+                                        nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                                         normalize = TRUE, 
                                         impute = TRUE, 
                                         winlen = 20, 
@@ -618,7 +618,7 @@ generate_profiles.character <- function(obj, klen = 6, parallel = TRUE,
 #' the beginning and end of each sequence.
 #!' @seealso \code{\link{generate_instances}} for generation of 
 #!' training and test instances for each index in each sequence\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_profiles_ex.R
@@ -626,7 +626,7 @@ generate_profiles.character <- function(obj, klen = 6, parallel = TRUE,
 #' @export
 generate_profiles.AAStringSet <- function(obj, klen = 6, parallel = TRUE, 
                                           nproc = ifelse(parallel, 
-                                                         comm.size(), 1), 
+                                                         pbdMPI::comm.size(), 1), 
                                           normalize = TRUE, 
                                           impute = TRUE, 
                                           winlen = 20, 
@@ -839,14 +839,14 @@ generate_instances_internal <- function(profiles, imputed_length, seq_lengths,
 #' dataframe.
 #!' @seealso \code{\link{generate_profiles}} for generation of 
 #!' frequency profiles for each sequence\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_instances_ex.R
 #!' @references{\insertRef{abnousi2016fast}{naddaR}}
 #' @export
 generate_instances <- function(obj, labeled = TRUE, parallel = TRUE, 
-                               nproc = ifelse(parallel, comm.size(), 1), 
+                               nproc = ifelse(parallel, pbdMPI::comm.size(), 1), 
                                groundtruth = NULL, truth_filename = NULL, 
                                klen = 6, normalize = TRUE, 
                                impute = TRUE, winlen = 20, 
@@ -940,7 +940,7 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
 #' dataframe.
 #!' @seealso \code{\link{generate_profiles}} for generation of 
 #!' frequency profiles for each sequence\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_instances_ex.R
@@ -948,7 +948,7 @@ generate_instances <- function(obj, labeled = TRUE, parallel = TRUE,
 #' @export
 generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE, 
                                          nproc = ifelse(parallel, 
-                                                        comm.size(), 1), 
+                                                        pbdMPI::comm.size(), 1), 
                                          groundtruth = NULL, 
                                          truth_filename = NULL, 
                                          klen = 6, normalize = TRUE, 
@@ -1039,7 +1039,7 @@ generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE,
 #' dataframe.
 #!' @seealso \code{\link{generate_profiles}} for generation of 
 #!' frequency profiles for each sequence\cr
-#!' \code{\link[pbdMPI]{comm.size}} for writing a distributed data object to a
+#!' \code{\link[pbdMPI]{pbdMPI::comm.size}} for writing a distributed data object to a
 #!' single file
 #' @author Armen Abnousi
 #' @example sandbox/generate_instances_ex.R
@@ -1047,7 +1047,7 @@ generate_instances.character <- function(obj, labeled = TRUE, parallel = TRUE,
 #' @export
 generate_instances.AAStringSet <- function(obj, labeled = TRUE, parallel = TRUE, 
                                            nproc = ifelse(parallel, 
-                                                          comm.size(), 1), 
+                                                          pbdMPI::comm.size(), 1), 
                                            groundtruth = NULL, 
                                            truth_filename = NULL, 
                                            klen = 6, normalize = TRUE, 

@@ -5,7 +5,7 @@
 \title{Generate Protein k-mer frequency profiles}
 \usage{
 generate_profiles(obj, klen = 6, parallel = TRUE, nproc = ifelse(parallel,
-  comm.size(), 1), normalize = TRUE, impute = TRUE, winlen = 20,
+  pbdMPI::comm.size(), 1), normalize = TRUE, impute = TRUE, winlen = 20,
   imputing_length = winlen\%/\%2, distributed = FALSE)
 }
 \arguments{

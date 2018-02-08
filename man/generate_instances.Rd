@@ -5,7 +5,7 @@
 \title{Generate Instances for Indices in Protein Sequences}
 \usage{
 generate_instances(obj, labeled = TRUE, parallel = TRUE,
-  nproc = ifelse(parallel, comm.size(), 1), groundtruth = NULL,
+  nproc = ifelse(parallel, pbdMPI::comm.size(), 1), groundtruth = NULL,
   truth_filename = NULL, klen = 6, normalize = TRUE, impute = TRUE,
   winlen = 20, imputing_length = winlen\%/\%2, distributed = FALSE)
 }

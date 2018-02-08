@@ -5,7 +5,7 @@
 \title{Counting k-mers in the dataset.}
 \usage{
 count_kmers(obj, klen = 6, parallel = TRUE, nproc = ifelse(parallel,
-  comm.size(), 1), distributed = FALSE)
+  pbdMPI::comm.size(), 1), distributed = FALSE)
 }
 \arguments{
 \item{obj}{A filepath to a fasta file containing protein sequences or an 
